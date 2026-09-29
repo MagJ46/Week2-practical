@@ -41,7 +41,12 @@ class Program
                 case "2":
                     RunWordCountTask();
                     break;
-                
+                case "3":
+                    CipherMenuSystem();
+                    break;
+                case "4":
+                    RunCircleAreaTask();
+                    break;
                 case "0":
                     exitApp = true;
                     Console.WriteLine("Exiting application. Goodbye!");
@@ -158,5 +163,195 @@ class Program
         return count;
     }
 
-    
+    // =========================================================================
+    // TASKS 6 - 9: CAESAR CIPHER SYSTEM
+    // =========================================================================
+
+    static void CipherMenuSystem()
+    {
+        bool inCipherMenu = true;
+
+        while (inCipherMenu)
+        {
+            try
+            {
+                Console.WriteLine("=== Caesar Cipher System (Tasks 6-9) ===");
+                Console.WriteLine("1. Encrypt Text");
+                Console.WriteLine("2. Decrypt Text");
+                Console.WriteLine("3. Run Task 9 Test Suite");
+                Console.WriteLine("0. Back to Main Menu");
+                Console.Write("Choice: ");
+
+                string choice = Console.ReadLine();
+
+                if (choice == "0")
+                {
+                    inCipherMenu = false;
+                    break;
+                }
+
+                if (choice == "3")
+                {
+                    RunCipherTests();
+                    continue;
+                }
+
+                if (choice != "1" && choice != "2")
+                {
+                    Console.WriteLine("Invalid option selected.\n");
+                    continue;
+                }
+
+                Console.Write("Enter string: ");
+                string text = Console.ReadLine();
+
+                Console.Write("Enter rotation key K (0 < K < 100): ");
+                int k = int.Parse(Console.ReadLine());
+
+                // Task 9 Constraint check: Ensure 0 < K < 100
+                if (k <= 0 || k >= 100)
+                {
+                    Console.WriteLine("Error: Rotation value must be strictly greater than 0 and less than 100.\n");
+                    continue;
+                }
+
+                if (choice == "1")
+                {
+                    string encrypted = Encrypt(text, k);
+                    Console.WriteLine($"\nOriginal Text : {text}");
+                    Console.WriteLine($"Encrypted Text: {encrypted}\n");
+                }
+                else if (choice == "2")
+                {
+                    string decrypted = Decrypt(text, k);
+                    Console.WriteLine($"\nEncrypted Text: {text}");
+                    Console.WriteLine($"Decrypted Text: {decrypted}\n");
+                }
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Error: Please enter a valid integer for rotation key.\n");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}\n");
+            }
+        }
+    }
+
+    // Tasks 6 & 9: Encrypt with Circular Wrap & Case Sensitivity
+    static string Encrypt(string input, int K)
+    {
+        K = K % 26; // Normalize rotation key
+        char[] result = new char[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            char ch = input[i];
+
+            if (char.IsUpper(ch))
+            {
+                result[i] = (char)('A' + (ch - 'A' + K) % 26);
+            }
+            else if (char.IsLower(ch))
+            {
+                result[i] = (char)('a' + (ch - 'a' + K) % 26);
+            }
+            else
+            {
+                // Non-alphabetic symbols (hyphens, spaces, punctuation) remain untouched
+                result[i] = ch;
+            }
+        }
+        return new string(result);
+    }
+
+    // Tasks 7 & 9: Decrypt Implementation
+    static string Decrypt(string input, int K)
+    {
+        K = K % 26; // Normalize rotation key
+        char[] result = new char[input.Length];
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            char ch = input[i];
+
+            if (char.IsUpper(ch))
+            {
+                result[i] = (char)('A' + (ch - 'A' - K + 26) % 26);
+            }
+            else if (char.IsLower(ch))
+            {
+                result[i] = (char)('a' + (ch - 'a' - K + 26) % 26);
+            }
+            else
+            {
+                result[i] = ch;
+            }
+        }
+        return new string(result);
+    }
+
+    // Task 9 Required Test Suite
+    static void RunCipherTests()
+    {
+        Console.WriteLine("\n--- Task 9 Required Test Cases ---");
+        string[] testStrings = { "try-catch", "MixedCASE", "C# string manipulation is fun!" };
+        int key = 3;
+
+        foreach (string str in testStrings)
+        {
+            string encrypted = Encrypt(str, key);
+            string decrypted = Decrypt(encrypted, key);
+
+            Console.WriteLine($"Original  : {str}");
+            Console.WriteLine($"Encrypted : {encrypted}");
+            Console.WriteLine($"Decrypted : {decrypted}");
+            Console.WriteLine(new string('-', 40));
+        }
+        Console.WriteLine();
+    }
+
+    // =========================================================================
+    // TASK 10: MATH CLASS - CIRCLE AREA
+    // =========================================================================
+
+    static void RunCircleAreaTask()
+    {
+        double radius = -1;
+
+        Console.WriteLine("=== Task 10: Circle Area Calculator ===");
+
+        while (radius != 0)
+        {
+            Console.Write("Enter circle radius (or enter 0 to exit back to main menu): ");
+            if (double.TryParse(Console.ReadLine(), out radius))
+            {
+                if (radius == 0)
+                {
+                    Console.WriteLine("Returning to main menu...\n");
+                    break;
+                }
+                else if (radius < 0)
+                {
+                    Console.WriteLine("Please enter a positive radius value.\n");
+                }
+                else
+                {
+                    double area = CircleArea(radius);
+                    Console.WriteLine($"Radius: {radius} | Calculated Area: {area:F4}\n");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a valid numerical value.\n");
+            }
+        }
+    }
+
+    // Task 10 Required Signature: Uses Math.Pow and Math.PI
+    static double CircleArea(double radius)
+    {
+        return Math.PI * Math.Pow(radius, 2);
+    }
 }
